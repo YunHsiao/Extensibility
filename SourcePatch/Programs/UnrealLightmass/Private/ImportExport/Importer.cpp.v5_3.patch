@@ -1,0 +1,4 @@
+@@ -139,100 +139,754 @@
+  %22Misc/FileHelper.h%22%0a#include %22Misc/SecureHash.h%22%0a
++%0a// Extensibility+: Begin%0a#include %22Modules/ModuleManager.h%22%0anamespace Lightmass%0a%7b%0a%09bool FLightmassImporter::ImportCustomData(FScene& Scene)%0a%09%7b%0a%09%09TArray%3cTCHAR%3e ModuleStr;%0a%09%09int32 NumModuleStr;%0a%09%09ImportData(&NumModuleStr);%0a%09%09if (NumModuleStr) ImportArray(ModuleStr, NumModuleStr);%0a%0a%09%09TArray%3cFString%3e Modules;%0a%09%09FString(ModuleStr.Num(), ModuleStr.GetData()).ParseIntoArray(Modules, TEXT(%22 %22));%0a%09%09for (const FString& Pair : Modules)%0a%09%09%7b%0a%09%09%09FString Plugin, Module;%0a%09%09%09check(Pair.Split(TEXT(%22:%22), &Plugin, &Module));%0a%09%09%09FModuleManager::LoadModuleChecked%3cICustomLightmassImporter%3e(*Module).Import(*this, Scene);%0a%09%09%7d%0a%09%09return true;%0a%09%7d%0a%7d%0a// Extensibility+: End%0a%0a
+ namespace Lightmass%0a%7b%0a%0aFLightmassImporter::FLightm

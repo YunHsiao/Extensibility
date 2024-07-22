@@ -1,0 +1,33 @@
+@@ -13819,100 +13819,103 @@
+ icLightingVar-%3eGetValueOnGameThread() != 0);%0a%09%09%09%09%09
++// 
+ const bool bForceNoPrecomputedLighting = GWorld-%3eG
+@@ -13944,100 +13944,326 @@
+ rceNoPrecomputedLighting %7c%7c !bAllowStaticLighting;
++ // Extensibility+-%0a%09%09%09%09%09const bool bForceNoPrecomputedLighting = !ActiveStaticLightingSystem-%3ebForceAllowStaticLighting && (GWorld-%3eGetWorldSettings()-%3ebForceNoPrecomputedLighting %7c%7c !bAllowStaticLighting); // Extensibility+%0a
+ %0a%09%09%09%09%09if (bForceNoPrecomputedLighting)%0a%09%09%09%09%09%7b%0a%09%09%09%09
+@@ -14746,100 +14746,103 @@
+ StaticLightingVar-%3eGetValueOnGameThread() != 0);%0a%09
++// 
+ const bool bForceNoPrecomputedLighting = GWorld-%3eG
+@@ -14871,100 +14871,322 @@
+ rceNoPrecomputedLighting %7c%7c !bAllowStaticLighting;
++ // Extensibility+-%0a%09const bool bForceNoPrecomputedLighting = !ActiveStaticLightingSystem-%3ebForceAllowStaticLighting && (GWorld-%3eGetWorldSettings()-%3ebForceNoPrecomputedLighting %7c%7c !bAllowStaticLighting); // Extensibility+%0a
+ %0a%09FStaticLightingManager::Get()-%3eClearCurrentNotif
+@@ -16106,168 +16106,380 @@
+ :FinishLightingBuild()%0a%7b%0a%09UWorld* World = GWorld;%0a
+-%09GetRendererModule().UpdateMapNeedsLightingFullyRebuiltState(World);
++%0a%09// Extensibility+: Begin%0a%09if (!IsRunningCommandlet() %7c%7c IsAllowCommandletRendering())%0a%09%7b%0a%09%09GetRendererModule().UpdateMapNeedsLightingFullyRebuiltState(World);%0a%09%7d%0a%09// Extensibility+: End%0a%0a%09// GetRendererModule().UpdateMapNeedsLightingFullyRebuiltState(World); // Extensibility+-%0a
+ %09GEngine-%3eDeferredCommands.AddUnique(TEXT(%22MAP CHE
+@@ -23195,100 +23195,103 @@
+ taticLightingVar-%3eGetValueOnGameThread() != 0);%0a%09%09
++// 
+ bForceNoPrecomputedLighting = World-%3eGetWorldSetti
+@@ -23308,100 +23308,283 @@
+ rceNoPrecomputedLighting %7c%7c !bAllowStaticLighting;
++ // Extensibility+-%0a%09%09bForceNoPrecomputedLighting = !bForceAllowStaticLighting && (World-%3eGetWorldSettings()-%3ebForceNoPrecomputedLighting %7c%7c !bAllowStaticLighting); // Extensibility+%0a
+ %09%09GConfig-%3eGetFloat( TEXT(%22TextureStreaming%22), TEX
+@@ -41970,100 +41970,196 @@
+ xtVisibilityId;%0a%09%09%09%09%09%09%09NextVisibilityId++;%0a%09%09%09%09%09%09%7d
++%0a%09%09%09%09%09%09%0a%09%09%09%09%09%09if (!CustomizePrimitiveInfo(Primitive, PrimitiveInfo)) continue; // Extensibility+
+ %0a%0a%09%09%09%09%09%09TArray%3cUStaticMeshComponent*%3e LODSubActorS

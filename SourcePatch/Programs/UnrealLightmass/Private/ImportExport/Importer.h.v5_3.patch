@@ -1,0 +1,4 @@
+@@ -4652,100 +4652,158 @@
+ &%09%09%09%09%09%09%09%09GetMaterials()%09%09%09%09%7b return Materials; %7d%0a%0a
++%09bool ImportCustomData(FScene& Scene); // Extensibility+%0a%0a
+ private:%0a%0a%09class FLightmassSwarm*%09Swarm;%0a%09FSHAHash

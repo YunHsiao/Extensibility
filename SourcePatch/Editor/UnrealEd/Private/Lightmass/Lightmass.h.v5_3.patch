@@ -1,0 +1,14 @@
+@@ -3700,108 +3700,160 @@
+ ensityVolume*%3e VolumetricLightmapDensityVolumes;%0a%0a
++// 
+ private:
++ // Extensibility+-%0aprotected: // Extensibility+%0a
+ %0a%09void SetVolumetricLightmapSettings(Lightmass::FV
+@@ -4777,100 +4777,335 @@
+ Channel );%0a%0a%09void WriteMappings( int32 Channel );%0a
++%0a%09// Extensibility+: Begin%0a%09FString DependentPluginModules;%0a%09TSet%3cFString%3e GetPluginBinaryDependencies(bool bIs64Bit) const;%0a%09UNREALED_API virtual void WriteCustomData(int32 Channel, bool bForceContentExport);%0a%09// Extensibility+: End%0a%0a
+ %09void WriteBaseMeshInstanceData( int32 Channel, in
+@@ -11398,100 +11398,128 @@
+ InDumpBinaryResults, bool bInOnlyBuildVisibility);
++%0a%0a%09virtual // Extensibility+
+ %0a%09~FLightmassProcessor();%0a%0a%09/** Retrieve an export

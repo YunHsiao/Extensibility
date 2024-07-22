@@ -1,0 +1,21 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Extensibility+",
+	"Description": "Misc extensibility updates for Unreal Engine",
+	"Category": "Other",
+	"CreatedBy": "YunHsiao",
+	"CreatedByURL": "https://github.com/YunHsiao/Extensibility",
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Plugins": [
+		{
+			"Name": "Crysknife",
+			"Enabled": true
+		}
+	],
+	"Modules": []
+}

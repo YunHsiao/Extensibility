@@ -1,0 +1,4 @@
+@@ -1170,100 +1170,467 @@
+ pport = true;%0a%09%09%09bBuildDeveloperTools = true;%0a%09%09%7d%0a
++%0a%09%09// Extensibility+: Lightmass: Begin%0a%09%09bCompileICU = false;%0a%09%09bCompileWithPluginSupport = true;%0a%09%09/*%0a%09%09 * Don't forget to add the following section to your plugin manifest first: (.uplugin file)%0a%09%09 *%09%22SupportedPrograms%22: %5b %22UnrealLightmass%22 %5d,%0a%09%09 */%0a%09%09// Add your plugins like this:%0a%09%09// AdditionalPlugins.Add(%22YourPlugin%22); // YourPlugin%0a%09%09// Extensibility+: End%0a%0a
+ %09%09// This app is a console application, not a Wind
