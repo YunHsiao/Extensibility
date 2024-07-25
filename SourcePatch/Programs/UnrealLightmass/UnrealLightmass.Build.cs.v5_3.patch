@@ -1,4 +1,0 @@
-@@ -345,100 +345,235 @@
- armInterface%22, %22Projects%22, %22ApplicationCore%22 %7d);%0a%0a
-+%09%09// Extensibility+: Lightmass: Add your plugin modules here%0a%09%09// PrivateDependencyModuleNames.Add(%22YourPluginModule%22); // YourPlugin%0a%0a
- %09%09PublicDefinitions.Add(%22UE_LIGHTMASS=1%22);%0a%0a%09%09if (

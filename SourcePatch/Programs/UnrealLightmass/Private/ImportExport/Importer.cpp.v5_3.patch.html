@@ -23,7 +23,7 @@ namespace Lightmass
 		{
 			FString Plugin, Module;
 			check(Pair.Split(TEXT(":"), &amp;Plugin, &amp;Module));
-			FModuleManager::LoadModuleChecked&lt;ICustomLightmassImporter&gt;(*Module).Import(*this, Scene);
+			FModuleManager::LoadModuleChecked&lt;ILightmassPlugin&gt;(*Module).Import(*this, Scene);
 		}
 		return true;
 	}

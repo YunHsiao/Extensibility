@@ -1,4 +1,4 @@
-@@ -1885,100 +1885,201 @@
+@@ -1918,100 +1918,201 @@
  mData(int32 Channel, bool bForceContentExport)%0a%7b%0a%09
 +// Extensibility+: Lightmass%0a%09// Always use subclasses instead of modifying this function directly.%0a%09
  // Subclass implementations should always begin wi
