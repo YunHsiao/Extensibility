@@ -27,8 +27,10 @@ public:
 
 class FShakeoutEditorUtils final
 {
+	template<typename T> static auto HasLaunchCustomSystemImpl(int) -> std::is_member_function_pointer<decltype(&T::LaunchCustomSystem)>;
+	template<typename T> static auto HasLaunchCustomSystemImpl(long) -> std::false_type;
 public:
 	template<typename T>
-	using THasLaunchCustomSystem = std::is_member_function_pointer<decltype(&T::LaunchCustomSystem)>;
-	static constexpr bool bIsPatched = THasLaunchCustomSystem<FStaticLightingManager>::value;
+	static constexpr bool HasLaunchCustomSystem = decltype(HasLaunchCustomSystemImpl<T>(0))::value;
+	static constexpr bool IsPatched = HasLaunchCustomSystem<FStaticLightingManager>;
 };

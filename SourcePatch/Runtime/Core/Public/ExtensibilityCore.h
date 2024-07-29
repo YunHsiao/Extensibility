@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "Math/UnrealMath.h"
 #include "Misc/EngineVersionComparison.h"
 
 #if UE_VERSION_OLDER_THAN(5, 0, 0)
