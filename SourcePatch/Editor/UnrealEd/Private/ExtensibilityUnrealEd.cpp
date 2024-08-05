@@ -18,7 +18,11 @@ void FStaticLightingManager::LaunchCustomSystem(FStaticLightingSystem* CustomSys
 		StaticLightingSystems.Emplace(CustomSystem);
 		ActiveStaticLightingSystem = StaticLightingSystems[0].Get();
 
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
 		if (ActiveStaticLightingSystem->CheckLightmassExecutableVersion())
+#else
+		if (true)
+#endif
 		{
 			if (ActiveStaticLightingSystem->BeginLightmassProcess())
 			{

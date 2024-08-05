@@ -1,4 +1,0 @@
-@@ -8814,100 +8814,156 @@
- mVolumeMappings, Importer.GetVolumeMappings() );%0a%0a
-+%09Importer.ImportCustomData( *this ); // Extensibility+%0a%0a
- %09DebugMapping = FindMappingByGuid(DebugInput.Mappi

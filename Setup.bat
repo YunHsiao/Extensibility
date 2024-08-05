@@ -2,5 +2,5 @@
 @rem SPDX-License-Identifier: MIT
 
 @echo off
-"%~dp0..\Crysknife\Crysknife.bat" -P Extensibility %*
+call "%~dp0..\Crysknife\Crysknife.bat" -P Extensibility %*
 pause

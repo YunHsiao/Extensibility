@@ -1,4 +1,0 @@
-@@ -42,100 +42,361 @@
- Reserved.%0a%0a#pragma once%0a%0a#include %22CoreMinimal.h%22%0a
-+%0a// Extensibility+: Begin%0a#include %22Modules/ModuleInterface.h%22%0anamespace Lightmass%0a%7b%0a%09class ILightmassPlugin : public IModuleInterface%0a%09%7b%0a%09public:%0a%09%09virtual bool Import(class FLightmassImporter& Importer, class FScene& Scene) = 0;%0a%09%7d;%0a%7d%0a// Extensibility+: End%0a%0a
- namespace Lightmass%0a%7b%0a%0aclass FLightmassLog : publi
