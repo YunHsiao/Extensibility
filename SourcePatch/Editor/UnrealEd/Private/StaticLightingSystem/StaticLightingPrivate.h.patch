@@ -22,12 +22,12 @@
  %09bool CreateLightmassProcessor();%0a%0a%09/** Collects the scene to be sent to the exporter */%0a%09void GatherScene();%0a%0a%09/** Runs initial export code of the lightmass processor */%0a%09bool InitiateLightmassProcessor();%0a%0a%09/**%0a%09 * Reports lighting build statistics to the log.%0a%09 */%0a%09void ReportStatistics( );%0a%0a%09/** Collects all static lighting info for processing */%0a%09void GatherStaticLightingInfo(bool bRebuildDirtyGeometryForLighting, bool bForceNoPrecomputedLighting);%0a%0a
 +%09virtual bool CustomizePrimitiveInfo(UPrimitiveComponent* Primitive, FStaticLightingPrimitiveInfo& PrimitiveInfo) %7b return true; %7d // @CrysknifeCT()%0a%0a
  %09%0a%09/** After importing, textures need to be encoded to be used */%0a%09void EncodeTextures(bool bLightingSuccessful);%0a%0a%09/** Pushes newly collected lightmaps on to the level */%0a%09void ApplyNewLightingData(bool bSuccessful);%0a%09%0a%09void CompleteDeterministicMap
-@@ -12653,508 +12660,565 @@
+@@ -12653,508 +12660,566 @@
  is present in the scene.%0a%09 */%0a%09void UpdateAutomaticImportanceVolumeBounds( const FBox& MeshBounds );%0a%0a%09/** Populate BuildDataResourcesToKeep from the GUIDs referenced in the given level. */%0a%09void GatherBuildDataResourcesToKeep(const ULevel* Level);%0a%0a
 -private:
-+// private: // @CrysknifeCT(-: @Crysknife(ContextSkip = Upper))%0a%0a
++// private: // @CrysknifeCT(-: @Crysknife(MatchContext = Lower))%0a%0a
  %0a%09/** The lights in the world which the system is building. */%0a%09TArray%3cULightComponentBase*%3e Lights;%0a%0a%09/** The options the system is building lighting with. */%0a%09const FLightingBuildOptions Options;%0a%0a%09/** true if the static lighting build has been can
-@@ -14897,500 +14905,593 @@
+@@ -14898,500 +14906,594 @@
  resource guid for all hidden/excluded levels. Used to keep those level data valid. */%0a%09TSet%3cFGuid%3e BuildDataResourcesToKeep;%0a%0a%09/** A handle on the processor that actually interfacets with Lightmass */%0a%09class FLightmassProcessor* LightmassProcessor;%0a%0a
-+%09bool bForceAllowStaticLighting = false; // @CrysknifeCT(: @Crysknife(ContextSkip = Upper))%0a%0a
++%09bool bForceAllowStaticLighting = false; // @CrysknifeCT(: @Crysknife(MatchContext = Lower))%0a%0a
  %0a%09friend FStaticLightingManager;%0a%09friend FLightmassProcessor;%0a%7d;%0a%0a/** %0a * Types used for debugging static lighting.  %0a * NOTE: These must remain binary compatible with the ones in Lightmass.%0a */%0a%0a#if !PLATFORM_MAC && !PLATFORM_LINUX%0a%09#pragma pack(pus

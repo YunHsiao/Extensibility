@@ -75,7 +75,7 @@ void FLightmassExporter::WriteCustomData(int32 Channel, bool bForceContentExport
 	Swarm.WriteChannel(Channel, *DependentPluginModules, NameLength * sizeof(TCHAR));
 }
 
-TSet<FString> FLightmassExporter::GetPluginBinaryDependencies(bool bIs64Bit) const
+TSet<FString> FLightmassExporter::GetPluginBinaryDependencies(bool bIs64Bit, bool bIsOptional) const
 {
 #if PLATFORM_WINDOWS
 	static const FString BinaryPlatform32 = TEXT("Win32/");
@@ -102,9 +102,16 @@ TSet<FString> FLightmassExporter::GetPluginBinaryDependencies(bool bIs64Bit) con
 	{
 		FString Plugin, Module;
 		check(Pair.Split(TEXT(":"), &Plugin, &Module));
-		Paths.Emplace(FString::Printf(TEXT("Plugins/%s/Binaries/%sUnrealLightmass-%s.%s"), *Plugin, *BinaryPlatform, *Module, *BinaryExtension));
-		// Do we need to manually merge this?
-		Paths.Emplace(Pair = FString::Printf(TEXT("Plugins/%s/Binaries/%sUnrealLightmass.modules"), *Plugin, *GeneralPlatform));
+		if (bIsOptional)
+		{
+			Paths.Emplace(FString::Printf(TEXT("Plugins/%s/Binaries/%sUnrealLightmass-%s.pdb"), *Plugin, *BinaryPlatform, *Module));
+		}
+		else
+		{
+			Paths.Emplace(FString::Printf(TEXT("Plugins/%s/Binaries/%sUnrealLightmass-%s.%s"), *Plugin, *BinaryPlatform, *Module, *BinaryExtension));
+			// Do we need to manually merge this?
+			Paths.Emplace(Pair = FString::Printf(TEXT("Plugins/%s/Binaries/%sUnrealLightmass.modules"), *Plugin, *GeneralPlatform));
+		}
 	}
 	return Paths;
 }

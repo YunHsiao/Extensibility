@@ -1,12 +1,8 @@
-@@ -1599,529 +1599,578 @@
- le%0a%09GLog-%3eAddOutputDevice( FLightmassLog::Get() );%0a%0a%09// Initialize FCommandLine%0a%09InitCommandLine(argc, argv);%0a%0a%09// Output devices.%0a%09GError = FPlatformApplicationMisc::GetErrorOutputDevice(); %0a%09GWarn = FPlatformApplicationMisc::GetFeedbackContext();%0a%0a
--#if USE_LOCAL_SWARM_INTERFACE
-+// #if USE_LOCAL_SWARM_INTERFACE // @CrysknifeCT(-)%0a%0a
-+#if 1 // @CrysknifeCT()%0a%0a
- %09bool bMessagingMode = false;%0a%09FString CommandLine = FCommandLine::Get();%0a%09if (USE_LOCAL_SWARM_INTERFACE && !FParse::Param(*CommandLine, TEXT(%22-Messaging%22)))%0a%09%7b%0a%09%09bMessagingMode = true;%0a%09%09CommandLine += TEXT(%22 -Messaging%22);%0a%09%7d%0a%0a%09// Don't spew all log
-@@ -2295,566 +2297,688 @@
- ut%22)))%0a%09%7b%0a%09%09CommandLine += TEXT(%22 -nostdout%22);%0a%09%7d%0a%0a%09GEngineLoop.PreInit(*CommandLine);%0a%0a%09// Tell the module manager is may now process newly-loaded UObjects when new C++ modules are loaded%0a%09FModuleManager::Get().StartProcessingNewlyLoadedObjects();%0a%0a
--%09FModuleManager::LoadModuleChecked%3cIMessagingModule%3e(%22Messaging%22);
-+%09// FModuleManager::LoadModuleChecked%3cIMessagingModule%3e(%22Messaging%22); // @CrysknifeCT(-)%0a%0a
-+%09if (USE_LOCAL_SWARM_INTERFACE) FModuleManager::Get().LoadModule(%22Messaging%22); // @CrysknifeCT()%0a%0a
- %09FModuleManager::Get().LoadModule(TEXT(%22Settings%22));%0a%09IPluginManager::Get().LoadModulesForEnabledPlugins(ELoadingPhase::PreDefault);%0a%09IPluginManager::Get().LoadModulesForEnabledPlugins(ELoadingPhase::PostDefault);%0a%0a%09ON_SCOPE_EXIT%0a%09%7b%0a%09%09FEngineLoop::Ap
+@@ -445,500 +445,547 @@
+ #include %22HAL/PlatformStackWalk.h%22%0a#include %22Unix/UnixPlatformCrashContext.h%22%0a#endif%0a%0a#if USE_LOCAL_SWARM_INTERFACE%0a#include %22IMessagingModule.h%22%0a#endif%0a%0aDEFINE_LOG_CATEGORY(LogLightmass);%0a%0aIMPLEMENT_APPLICATION(UnrealLightmass, %22UnrealLightmass%22);%0a%0a
++#include %22Misc/ScopeExit.h%22%09// @CrysknifeCT()%0a%0a
+ %0anamespace Lightmass%0a%7b%0a%0a/**%0a * Compare the output results from 2 lighting results%0a *%0a * @param Dir1 First directory of mapping file dumps to compare%0a * @param Dir2 Seconds directory of mapping file dumps to compare%0a */%0avoid CompareLightingResults(con
+@@ -3076,500 +3077,1270 @@
+ %09%09//   commands which use FTaskGraphInterface and --%3e crashes. FEngineLoop::AppExit() calls%0a%09%09//   FTaskGraphInterface::Shutdown() after calling FThreadStats::StopThread() if needed.%0a%09%09FEngineLoop::AppExit();%0a%09%7d;%0a#endif // USE_LOCAL_SWARM_INTERFACE%0a%0a
++%09// @CrysknifeCTBegin(: @Crysknife(MatchContext = Lower))%0a%0a#if !USE_LOCAL_SWARM_INTERFACE%0a%09FString CommandLine = FCommandLine::Get();%0a%09GEngineLoop.PreInit(*CommandLine);%0a%0a%09// Tell the module manager is may now process newly-loaded UObjects when new C++ modules are loaded%0a%09FModuleManager::Get().StartProcessingNewlyLoadedObjects();%0a%09IPluginManager::Get().LoadModulesForEnabledPlugins(ELoadingPhase::PreDefault);%0a%09IPluginManager::Get().LoadModulesForEnabledPlugins(ELoadingPhase::PostDefault);%0a%0a%09ON_SCOPE_EXIT%0a%09%7b%0a%09%09FEngineLoop::AppPreExit();%0a%09%09FModuleManager::Get().UnloadModulesAtShutdown();%0a%09%09FEngineLoop::AppExit();%0a%09%7d;%0a#elif UE_VERSION_OLDER_THAN(5, 3, 0)%0a%09IPluginManager::Get().LoadModulesForEnabledPlugins(ELoadingPhase::PostDefault);%0a#endif%0a%09// @CrysknifeCTEnd()%0a%0a
+ %0a%09UE_LOG(LogLightmass, Display,  TEXT(%22Lightmass %25s started on: %25s. Command-line: %25s%22), FPlatformMisc::GetUBTPlatform(), FPlatformProcess::ComputerName(), FCommandLine::Get() );%0a%0a%09// parse commandline options%0a%09bool bRunUnitTest = false;%0a%09bool bDumpTe
