@@ -1,33 +1,33 @@
-@@ -6059,500 +6059,532 @@
+@@ -6059,500 +6059,533 @@
  %7b%0a%09int32 NumTexels;%0a%09TRefCountPtr%3cFStaticLightingMapping%3e Mapping;%0a%7d;%0a%0a/** Always active singleton class which manages all static light systems and subsystems */%0aclass FStaticLightingManager : public TSharedFromThis%3cFStaticLightingManager%3e%0a%7b%0apublic:%0a
-+%09UNREALED_API // Extensibility+%0a
++%09UNREALED_API // @CrysknifeCT()%0a%0a
  %09static TSharedPtr%3cFStaticLightingManager%3e Get();%0a%0a%09/** Processes lighting data that is now pending from a finished lightmass pass */%0a%09static void ProcessLightingData();%0a%09/** Stops lightmass from working, and discards the data */%0a%09static void CancelL
-@@ -6821,500 +6821,600 @@
+@@ -6821,500 +6822,601 @@
   for when the build finishes */%0a%09void SendBuildDoneNotification( bool AutoApplyFailed );%0a%0a%09/** Updates current notification with new text */%0a%09void SetNotificationText( FText Text );%0a%09%0a%09static void ImportRequested();%0a%09static void DiscardRequested();%0a%0a
-+%09UNREALED_API void LaunchCustomSystem(class FStaticLightingSystem* CustomSystem); // Extensibility+%0a
++%09UNREALED_API void LaunchCustomSystem(class FStaticLightingSystem* CustomSystem); // @CrysknifeCT()%0a%0a
  %0a%09/** Initializes the static lighting system to defaults and kicks it off if possible */%0a%09void CreateStaticLightingSystem(const FLightingBuildOptions& Options);%0a%09/** Updates the build lighting with info from Lightmass, checking for completion */%0a%09voi
-@@ -8678,500 +8678,527 @@
+@@ -8678,500 +8680,528 @@
  d options.%0a%09 * @param InOptions - The static lighting build options.%0a%09 * @param InWorld -   The world we wish to build the lighting for%0a%09 */%0a%09FStaticLightingSystem(const FLightingBuildOptions& InOptions, UWorld* InWorld, ULevel* InLightingScenario);%0a
-+%09virtual // Extensibility+%0a
++%09virtual // @CrysknifeCT()%0a%0a
  %09~FStaticLightingSystem();%0a%0a%09bool CheckLightmassExecutableVersion();%0a%09%0a%09/** Kicks off the lightmass processing, and, if successful, starts the asynchronous task */%0a%09bool BeginLightmassProcess();%0a%0a%09/** Updates the lightmass processor to query if the a
-@@ -9889,508 +9889,560 @@
+@@ -9889,508 +9892,562 @@
  ss in flight) */%0a%09bool IsAsyncBuilding() const;%0a%0a%09bool IsAmortizedExporting() const;%0a%0a%09bool ShouldOperateOnLevel(ULevel* InLevel) const%0a%09%7b%0a%09%09return InLevel && (!InLevel-%3ebIsLightingScenario %7c%7c InLevel == LightingScenario) && InLevel-%3ebIsVisible;%0a%09%7d%0a%0a
 -private:
-+// private: // Extensibility+-%0a
-+protected: // Extensibility+%0a
++// private: // @CrysknifeCT(-)%0a%0a
++protected: // @CrysknifeCT()%0a%0a
  %09/**%0a%09 * Generates mappings/meshes for all BSP in the given level%0a%09 *%0a%09 * @param Level Level to build BSP lighting info for%0a%09 * @param bBuildLightingForBSP If true, we need BSP mappings generated as well as the meshes%0a%09 */%0a%09void AddBSPStaticLightingI
-@@ -10818,959 +10818,1148 @@
+@@ -10818,959 +10823,1150 @@
  for its static lighting info, and adds it to the system. */%0a%09void AddPrimitiveStaticLightingInfo(FStaticLightingPrimitiveInfo& PrimitiveInfo, bool bBuildActorLighting);%0a%09%0a%09/** Makes the lightmass processor structure for handling import and export */%0a
-+%09UNREALED_API virtual // Extensibility+%0a
++%09UNREALED_API virtual // @CrysknifeCT()%0a%0a
  %09bool CreateLightmassProcessor();%0a%0a%09/** Collects the scene to be sent to the exporter */%0a%09void GatherScene();%0a%0a%09/** Runs initial export code of the lightmass processor */%0a%09bool InitiateLightmassProcessor();%0a%0a%09/**%0a%09 * Reports lighting build statistics to the log.%0a%09 */%0a%09void ReportStatistics( );%0a%0a%09/** Collects all static lighting info for processing */%0a%09void GatherStaticLightingInfo(bool bRebuildDirtyGeometryForLighting, bool bForceNoPrecomputedLighting);%0a%0a
-+%09virtual bool CustomizePrimitiveInfo(UPrimitiveComponent* Primitive, FStaticLightingPrimitiveInfo& PrimitiveInfo) %7b return true; %7d // Extensibility+%0a
++%09virtual bool CustomizePrimitiveInfo(UPrimitiveComponent* Primitive, FStaticLightingPrimitiveInfo& PrimitiveInfo) %7b return true; %7d // @CrysknifeCT()%0a%0a
  %09%0a%09/** After importing, textures need to be encoded to be used */%0a%09void EncodeTextures(bool bLightingSuccessful);%0a%0a%09/** Pushes newly collected lightmaps on to the level */%0a%09void ApplyNewLightingData(bool bSuccessful);%0a%09%0a%09void CompleteDeterministicMap
-@@ -12653,508 +12653,566 @@
+@@ -12653,508 +12660,565 @@
  is present in the scene.%0a%09 */%0a%09void UpdateAutomaticImportanceVolumeBounds( const FBox& MeshBounds );%0a%0a%09/** Populate BuildDataResourcesToKeep from the GUIDs referenced in the given level. */%0a%09void GatherBuildDataResourcesToKeep(const ULevel* Level);%0a%0a
 -private:
-+// private: // Extensibility+-: @Crysknife(IgnoreContext = Upper)%0a
++// private: // @CrysknifeCT(-: @Crysknife(ContextSkip = Upper))%0a%0a
  %0a%09/** The lights in the world which the system is building. */%0a%09TArray%3cULightComponentBase*%3e Lights;%0a%0a%09/** The options the system is building lighting with. */%0a%09const FLightingBuildOptions Options;%0a%0a%09/** true if the static lighting build has been can
-@@ -14899,500 +14899,559 @@
+@@ -14897,500 +14905,593 @@
  resource guid for all hidden/excluded levels. Used to keep those level data valid. */%0a%09TSet%3cFGuid%3e BuildDataResourcesToKeep;%0a%0a%09/** A handle on the processor that actually interfacets with Lightmass */%0a%09class FLightmassProcessor* LightmassProcessor;%0a%0a
-+%09bool bForceAllowStaticLighting = false; // Extensibility+%0a
++%09bool bForceAllowStaticLighting = false; // @CrysknifeCT(: @Crysknife(ContextSkip = Upper))%0a%0a
  %0a%09friend FStaticLightingManager;%0a%09friend FLightmassProcessor;%0a%7d;%0a%0a/** %0a * Types used for debugging static lighting.  %0a * NOTE: These must remain binary compatible with the ones in Lightmass.%0a */%0a%0a#if !PLATFORM_MAC && !PLATFORM_LINUX%0a%09#pragma pack(pus
