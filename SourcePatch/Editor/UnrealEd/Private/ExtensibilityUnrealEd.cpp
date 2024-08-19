@@ -95,6 +95,14 @@ TSet<FString> FLightmassExporter::GetPluginBinaryDependencies(bool bIs64Bit, boo
 #error "Unknown Lightmass platform"
 #endif
 	TSet<FString> Paths;
+	if (bIsOptional)
+	{
+		Paths.Emplace(FString::Printf(TEXT("Binaries/%sUnrealLightmass-Core.pdb"), *BinaryPlatform));
+	}
+	else
+	{
+		Paths.Emplace(FString::Printf(TEXT("Binaries/%sUnrealLightmass.modules"), *GeneralPlatform));
+	}
 
 	TArray<FString> Modules;
 	DependentPluginModules.ParseIntoArray(Modules, TEXT(" "));

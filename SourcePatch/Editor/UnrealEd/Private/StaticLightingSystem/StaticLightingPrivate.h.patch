@@ -16,10 +16,12 @@
 +// private: // @CrysknifeCT(-)%0a%0a
 +protected: // @CrysknifeCT()%0a%0a
  %09/**%0a%09 * Generates mappings/meshes for all BSP in the given level%0a%09 *%0a%09 * @param Level Level to build BSP lighting info for%0a%09 * @param bBuildLightingForBSP If true, we need BSP mappings generated as well as the meshes%0a%09 */%0a%09void AddBSPStaticLightingI
-@@ -10818,959 +10823,1150 @@
+@@ -10818,500 +10823,541 @@
  for its static lighting info, and adds it to the system. */%0a%09void AddPrimitiveStaticLightingInfo(FStaticLightingPrimitiveInfo& PrimitiveInfo, bool bBuildActorLighting);%0a%09%0a%09/** Makes the lightmass processor structure for handling import and export */%0a
 +%09UNREALED_API virtual // @CrysknifeCT()%0a%0a
- %09bool CreateLightmassProcessor();%0a%0a%09/** Collects the scene to be sent to the exporter */%0a%09void GatherScene();%0a%0a%09/** Runs initial export code of the lightmass processor */%0a%09bool InitiateLightmassProcessor();%0a%0a%09/**%0a%09 * Reports lighting build statistics to the log.%0a%09 */%0a%09void ReportStatistics( );%0a%0a%09/** Collects all static lighting info for processing */%0a%09void GatherStaticLightingInfo(bool bRebuildDirtyGeometryForLighting, bool bForceNoPrecomputedLighting);%0a%0a
+ %09bool CreateLightmassProcessor();%0a%0a%09/** Collects the scene to be sent to the exporter */%0a%09void GatherScene();%0a%0a%09/** Runs initial export code of the lightmass processor */%0a%09bool InitiateLightmassProcessor();%0a%0a%09/**%0a%09 * Reports lighting build statistics
+@@ -11317,500 +11323,650 @@
+ /**%0a%09 * Reports lighting build statistics to the log.%0a%09 */%0a%09void ReportStatistics( );%0a%0a%09/** Collects all static lighting info for processing */%0a%09void GatherStaticLightingInfo(bool bRebuildDirtyGeometryForLighting, bool bForceNoPrecomputedLighting);%0a%0a
 +%09virtual bool CustomizePrimitiveInfo(UPrimitiveComponent* Primitive, FStaticLightingPrimitiveInfo& PrimitiveInfo) %7b return true; %7d // @CrysknifeCT()%0a%0a
  %09%0a%09/** After importing, textures need to be encoded to be used */%0a%09void EncodeTextures(bool bLightingSuccessful);%0a%0a%09/** Pushes newly collected lightmaps on to the level */%0a%09void ApplyNewLightingData(bool bSuccessful);%0a%09%0a%09void CompleteDeterministicMap
 @@ -12653,508 +12660,566 @@
