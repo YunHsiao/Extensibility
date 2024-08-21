@@ -1,4 +1,4 @@
-@@ -904,500 +904,668 @@
+@@ -904,500 +904,676 @@
  ts(struct FTextureMappingStaticLightingData& LightingData, bool bUseUniqueChannel) const;%0a%09%09void ExportResults(const struct FPrecomputedVisibilityData& TaskData) const;%0a%09%09void ExportResults(const struct FVolumetricLightmapTaskData& TaskData) const;%0a%0a
-+%09%09// @CrysknifeCTBegin()%0a%0a%09%09template%3ctypename DataType%3e%0a%09%09void ExportResults(const DataType& TaskData) const%0a%09%09%7b%0a%09%09%09TaskData.Export(Swarm);%0a%09%09%7d%0a%09%09// @CrysknifeCTEnd()%0a%0a
++%09%09// @ExtensibilityCTBegin()%0a%0a%09%09template%3ctypename DataType%3e%0a%09%09void ExportResults(const DataType& TaskData) const%0a%09%09%7b%0a%09%09%09TaskData.Export(Swarm);%0a%09%09%7d%0a%09%09// @ExtensibilityCTEnd()%0a%0a
  %0a%09%09/**%0a%09%09 * Used when exporting multiple mappings into a single file%0a%09%09 */%0a%09%09int32 BeginExportResults(struct FTextureMappingStaticLightingData& LightingData, uint32 NumMappings) const;%0a%09%09void EndExportResults() const;%0a%0a%09%09/** Exports volume lighting s

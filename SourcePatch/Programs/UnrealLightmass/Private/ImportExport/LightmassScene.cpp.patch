@@ -1,4 +1,4 @@
-@@ -8614,500 +8614,556 @@
+@@ -8614,500 +8614,560 @@
  Mappings, Importer.GetFluidMappings() );%0a%09Importer.ImportObjectArray( LandscapeMappings, NumLandscapeTextureMappings, Importer.GetLandscapeMappings() );%0a%09Importer.ImportObjectArray( VolumeMappings, NumVolumeMappings, Importer.GetVolumeMappings() );%0a%0a
-+%09Importer.ImportCustomData( *this ); // @CrysknifeCT()%0a%0a
++%09Importer.ImportCustomData( *this ); // @ExtensibilityCT()%0a%0a
  %0a%09DebugMapping = FindMappingByGuid(DebugInput.MappingGuid);%0a%09if (DebugMapping)%0a%09%7b%0a#if !ALLOW_LIGHTMAP_SAMPLE_DEBUGGING%0a%09%09checkf(false, TEXT(%22Texel Debugging active, but Lightmass was compiled with ALLOW_LIGHTMAP_SAMPLE_DEBUGGING == 0%22));%0a#endif%0a%09%09con
