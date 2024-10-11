@@ -1,8 +1,8 @@
-@@ -445,500 +445,551 @@
+@@ -445,500 +445,624 @@
  #include %22HAL/PlatformStackWalk.h%22%0a#include %22Unix/UnixPlatformCrashContext.h%22%0a#endif%0a%0a#if USE_LOCAL_SWARM_INTERFACE%0a#include %22IMessagingModule.h%22%0a#endif%0a%0aDEFINE_LOG_CATEGORY(LogLightmass);%0a%0aIMPLEMENT_APPLICATION(UnrealLightmass, %22UnrealLightmass%22);%0a%0a
-+#include %22Misc/ScopeExit.h%22%09// @ExtensibilityCT()%0a%0a
++// @ExtensibilityCTBegin()%0a%0a#include %22Misc/ScopeExit.h%22%0a#include %22Misc/EngineVersionComparison.h%22%0a// @ExtensibilityCTEnd()%0a%0a
  %0anamespace Lightmass%0a%7b%0a%0a/**%0a * Compare the output results from 2 lighting results%0a *%0a * @param Dir1 First directory of mapping file dumps to compare%0a * @param Dir2 Seconds directory of mapping file dumps to compare%0a */%0avoid CompareLightingResults(con
-@@ -3076,500 +3081,1241 @@
+@@ -3148,500 +3154,1241 @@
  %09%09//   commands which use FTaskGraphInterface and --%3e crashes. FEngineLoop::AppExit() calls%0a%09%09//   FTaskGraphInterface::Shutdown() after calling FThreadStats::StopThread() if needed.%0a%09%09FEngineLoop::AppExit();%0a%09%7d;%0a#endif // USE_LOCAL_SWARM_INTERFACE%0a%0a
 +%09// @ExtensibilityCTBegin(: @Crysknife(MatchContext = Lower))%0a%0a#if !USE_LOCAL_SWARM_INTERFACE%0a%09GEngineLoop.PreInit(FCommandLine::Get());%0a%0a%09// Tell the module manager is may now process newly-loaded UObjects when new C++ modules are loaded%0a%09FModuleManager::Get().StartProcessingNewlyLoadedObjects();%0a%09IPluginManager::Get().LoadModulesForEnabledPlugins(ELoadingPhase::PreDefault);%0a%09IPluginManager::Get().LoadModulesForEnabledPlugins(ELoadingPhase::PostDefault);%0a%0a%09ON_SCOPE_EXIT%0a%09%7b%0a%09%09FEngineLoop::AppPreExit();%0a%09%09FModuleManager::Get().UnloadModulesAtShutdown();%0a%09%09FEngineLoop::AppExit();%0a%09%7d;%0a#elif UE_VERSION_OLDER_THAN(5, 3, 0)%0a%09IPluginManager::Get().LoadModulesForEnabledPlugins(ELoadingPhase::PostDefault);%0a#endif%0a%09// @ExtensibilityCTEnd()%0a%0a
  %0a%09UE_LOG(LogLightmass, Display,  TEXT(%22Lightmass %25s started on: %25s. Command-line: %25s%22), FPlatformMisc::GetUBTPlatform(), FPlatformProcess::ComputerName(), FCommandLine::Get() );%0a%0a%09// parse commandline options%0a%09bool bRunUnitTest = false;%0a%09bool bDumpTe
