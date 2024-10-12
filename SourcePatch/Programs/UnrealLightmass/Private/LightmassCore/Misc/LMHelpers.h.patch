@@ -1,4 +1,4 @@
-@@ -1,342 +1,607 @@
+@@ -1,342 +1,609 @@
  // Copyright Epic Games, Inc. All Rights Reserved.%0a%0a#pragma once%0a%0a#include %22CoreMinimal.h%22%0a%0a
-+// @ExtensibilityCTBegin()%0a%0a#include %22Modules/ModuleInterface.h%22%0anamespace Lightmass%0a%7b%0a%09class ILightmassPlugin : public IModuleInterface%0a%09%7b%0a%09public:%0a%09%09virtual bool Import(class FLightmassImporter& Importer, class FScene& Scene) = 0;%0a%09%7d;%0a%7d%0a// @ExtensibilityCTEnd()%0a%0a
++// @ExtensibilityTagBegin()%0a%0a#include %22Modules/ModuleInterface.h%22%0anamespace Lightmass%0a%7b%0a%09class ILightmassPlugin : public IModuleInterface%0a%09%7b%0a%09public:%0a%09%09virtual bool Import(class FLightmassImporter& Importer, class FScene& Scene) = 0;%0a%09%7d;%0a%7d%0a// @ExtensibilityTagEnd()%0a%0a
  %0anamespace Lightmass%0a%7b%0a%0aclass FLightmassLog : public FOutputDevice%0a%7b%0apublic:%0a%0a%09FLightmassLog();%0a%09~FLightmassLog();%0a%0a%09// BEGIN FOutputDevice Interface %0a%09virtual void Serialize( const TCHAR* V, ELogVerbosity::Type Verbosity, const class FName& Category

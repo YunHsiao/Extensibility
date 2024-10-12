@@ -1,4 +1,4 @@
-@@ -4452,500 +4452,562 @@
+@@ -4452,500 +4452,563 @@
  ng*%3e&%09%09GetLandscapeMappings()%09%09%7b return LandscapeMappings; %7d%0a%09TMap%3cFGuid,class FStaticLightingGlobalVolumeMapping*%3e&%09%09%09GetVolumeMappings()%09%09%09%7b return VolumeMappings; %7d%0a%09TMap%3cFSHAHash,class FMaterial*%3e&%09%09%09%09%09%09%09%09GetMaterials()%09%09%09%09%7b return Materials; %7d%0a%0a
-+%09bool ImportCustomData(FScene& Scene); // @ExtensibilityCT()%0a%0a
++%09bool ImportCustomData(FScene& Scene); // @ExtensibilityTag()%0a%0a
  %0aprivate:%0a%0a%09class FLightmassSwarm*%09Swarm;%0a%09FSHAHash LightmassExecutableHash;%0a%0a%09TMap%3cFGuid,class FLight*%3e%09%09%09%09%09%09%09%09%09%09Lights;%0a%09TMap%3cFGuid,class FStaticMesh*%3e%09%09%09%09%09%09%09%09%09StaticMeshes;%0a%09TMap%3cFGuid,class FStaticMeshStaticLightingMesh*%3e%09%09%09%09StaticMeshInstances;%0a

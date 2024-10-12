@@ -1,14 +1,14 @@
-@@ -3500,508 +3500,604 @@
+@@ -3500,508 +3500,606 @@
  %0a%09float GetAmortizedExportPercentDone() const;%0a%0a%09/** Guids of visibility tasks. */%0a%09TArray%3cFGuid%3e VisibilityBucketGuids;%0a%0a%09TMap%3cFGuid, int32%3e VolumetricLightmapTaskGuids;%0a%0a%09TArray%3cAVolumetricLightmapDensityVolume*%3e VolumetricLightmapDensityVolumes;%0a%0a
 -private:
-+// private: // @ExtensibilityCT(-: @Crysknife(MatchContext = Lower))%0a%0a
-+protected: // @ExtensibilityCT()%0a%0a
++// private: // @ExtensibilityTag(-: @Crysknife(MatchContext = Lower))%0a%0a
++protected: // @ExtensibilityTag()%0a%0a
  %0a%09void SetVolumetricLightmapSettings(Lightmass::FVolumetricLightmapSettings& OutSettings);%0a%0a%09void WriteToChannel( FLightmassStatistics& Stats, FGuid& DebugMappingGuid );%0a%09bool WriteToMaterialChannel(FLightmassStatistics& Stats);%0a%0a%09/** Exports visibil
-@@ -4613,500 +4623,757 @@
+@@ -4613,500 +4625,759 @@
  ation();%0a%09void ExportMaterial(UMaterialInterface* Material, const FLightmassMaterialExportSettings& ExportSettings);%0a%0a%09void WriteMeshInstances( int32 Channel );%0a%09void WriteLandscapeInstances( int32 Channel );%0a%0a%09void WriteMappings( int32 Channel );%0a%0a%0a
-+%09// @ExtensibilityCTBegin()%0a%0a%09FString DependentPluginModules;%0a%09TSet%3cFString%3e GetPluginBinaryDependencies(bool bIs64Bit, bool bIsOptional) const;%0a%09UNREALED_API virtual void WriteCustomData(int32 Channel, bool bForceContentExport);%0a%09// @ExtensibilityCTEnd()%0a%0a
++%09// @ExtensibilityTagBegin()%0a%0a%09FString DependentPluginModules;%0a%09TSet%3cFString%3e GetPluginBinaryDependencies(bool bIs64Bit, bool bIsOptional) const;%0a%09UNREALED_API virtual void WriteCustomData(int32 Channel, bool bForceContentExport);%0a%09// @ExtensibilityTagEnd()%0a%0a
  %09void WriteBaseMeshInstanceData( int32 Channel, int32 MeshIndex, const class FStaticLightingMesh* Mesh, TArray%3cLightmass::FMaterialElementData%3e& MaterialElementData );%0a%09void WriteBaseMappingData( int32 Channel, const class FStaticLightingMapping* Map
-@@ -11252,500 +11268,532 @@
+@@ -11252,500 +11272,533 @@
  public:%0a%09/** %0a%09 * Constructor%0a%09 * %0a%09 * @param bInDumpBinaryResults true if it should dump out raw binary lighting data to disk%0a%09 */%0a%09FLightmassProcessor(const FStaticLightingSystem& InSystem, bool bInDumpBinaryResults, bool bInOnlyBuildVisibility);%0a%0a
-+%09virtual // @ExtensibilityCT()%0a%0a
++%09virtual // @ExtensibilityTag()%0a%0a
  %09~FLightmassProcessor();%0a%0a%09/** Retrieve an exporter for the given channel name */%0a%09FLightmassExporter* GetLightmassExporter();%0a%0a%09/** Is the connection to Swarm valid? */%0a%09bool IsSwarmConnectionIsValid() const%0a%09%7b%0a%09%09return bSwarmConnectionIsValid;%0a%09%7d%0a%0a
