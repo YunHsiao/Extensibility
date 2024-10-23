@@ -1,4 +1,5 @@
-//Copyright Tencent Timi-J1&F1 Studio, Inc. All Rights Reserved
+// SPDX-FileCopyrightText: 2024 Yun Hsiao Wu <yunhsiaow@gmail.com>
+// SPDX-License-Identifier: MIT
 
 #pragma once
 
