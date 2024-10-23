@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2024 Yun Hsiao Wu <yunhsiaow@gmail.com>
+SPDX-License-Identifier: MIT
+-->
+
 # Extensibility+
 
 A set of extensibility updates for Unreal Engine.
