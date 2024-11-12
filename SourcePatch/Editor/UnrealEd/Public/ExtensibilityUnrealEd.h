@@ -34,12 +34,26 @@ public:
 	static constexpr bool IsPatched = HasLaunchCustomSystem<FStaticLightingManager>;
 };
 
-#if UE_VERSION_NEWER_THAN(5, 1, 0)
-#include "ActorFactories/ActorFactory.h"
-using CreateBrushForVolumeActor = UActorFactory::CreateBrushForVolumeActor;
-#else
-extern UNREALED_API void CreateBrushForVolumeActor(AVolume* NewActor, UBrushBuilder* BrushBuilder);
-#endif
-
+extern UNREALED_API void CreateBrushForVolumeActorHelper(AVolume* NewActor, UBrushBuilder* BrushBuilder);
 extern UNREALED_API void UpdateLevelBounds(ULevel* Level);
-extern UNREALED_API void SavePackageWithConsistentGuid(UPackage* Package, const FString& Filename);
+extern UNREALED_API void SavePackageWithConsistentGuid(UPackage* Package);
+
+template<typename ActorType>
+static ActorType* FindOrCreateActor(ULevel* Level)
+{
+	ActorType* Result;
+	if (auto* ActorIt = Level->Actors.FindByPredicate([](const AActor* Actor)
+		{
+			return Cast<ActorType>(Actor);
+		}))
+	{
+		Result = Cast<ActorType>(*ActorIt);
+	}
+	else
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.OverrideLevel = Level;
+		Result = GWorld->SpawnActor<ActorType>(FVector::ZeroVector, FRotator::ZeroRotator, SpawnParams);
+	}
+	return Result;
+}

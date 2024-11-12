@@ -14,6 +14,6 @@ bin
 Binaries
 Intermediate
 
-CrysknifeLocal*.ini
-CrysknifeCache.ini
+Crysknife*Local.ini
+Crysknife*Cache.ini
 *.protected.patch

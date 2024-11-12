@@ -6,47 +6,17 @@
 #include "PackageHelperFunctions.h"
 #include "Engine/LevelBounds.h"
 
-#if !UE_VERSION_NEWER_THAN(5, 1, 0)
-#include "BSPOps.h"
-#include "Components/BrushComponent.h"
-#include "Engine/BrushBuilder.h"
-void CreateBrushForVolumeActor( AVolume* NewActor, UBrushBuilder* BrushBuilder )
+#if UE_VERSION_NEWER_THAN(5, 1, 0)
+#include "ActorFactories/ActorFactory.h"
+void CreateBrushForVolumeActorHelper(AVolume* NewActor, UBrushBuilder* BrushBuilder)
 {
-	if ( NewActor != nullptr )
-	{
-		// this code builds a brush for the new actor
-		NewActor->PreEditChange(nullptr);
-
-		// Use the same object flags as the owner volume
-		EObjectFlags ObjectFlags = NewActor->GetFlags() & (RF_Transient | RF_Transactional);
-
-		NewActor->PolyFlags = 0;
-		NewActor->Brush = NewObject<UModel>(NewActor, NAME_None, ObjectFlags);
-		NewActor->Brush->Initialize(nullptr, true);
-		NewActor->Brush->Polys = NewObject<UPolys>(NewActor->Brush, NAME_None, ObjectFlags);
-		NewActor->GetBrushComponent()->Brush = NewActor->Brush;
-		if(BrushBuilder != nullptr)
-		{
-			NewActor->BrushBuilder = DuplicateObject<UBrushBuilder>(BrushBuilder, NewActor);
-		}
-
-		BrushBuilder->Build( NewActor->GetWorld(), NewActor );
-
-		FBSPOps::csgPrepMovingBrush( NewActor );
-
-		// Set the texture on all polys to nullptr.  This stops invisible textures
-		// dependencies from being formed on volumes.
-		if ( NewActor->Brush )
-		{
-			for ( int32 poly = 0 ; poly < NewActor->Brush->Polys->Element.Num() ; ++poly )
-			{
-				FPoly* Poly = &(NewActor->Brush->Polys->Element[poly]);
-				Poly->Material = nullptr;
-			}
-		}
-
-		NewActor->PostEditChange();
-	}
+	UActorFactory::CreateBrushForVolumeActor(NewActor, BrushBuilder);
+}
+#else
+extern void CreateBrushForVolumeActor(AVolume* NewActor, UBrushBuilder* BrushBuilder);
+void CreateBrushForVolumeActorHelper(AVolume* NewActor, UBrushBuilder* BrushBuilder)
+{
+	CreateBrushForVolumeActor(NewActor, BrushBuilder);
 }
 #endif
 
@@ -79,7 +49,9 @@ void UpdateLevelBounds(ULevel* Level)
 	}
 }
 
-extern UNREALED_API void SavePackageWithConsistentGuid(UPackage* Package, const FString& Filename)
+void SavePackageWithConsistentGuid(UPackage* Package)
 {
-	SavePackageHelper(Package, Filename, RF_Standalone, GWarn, nullptr, SAVE_KeepGUID);
+	FString LevelFileName;
+	ensure(FPackageName::TryConvertLongPackageNameToFilename(Package->GetPathName(), LevelFileName, FPackageName::GetMapPackageExtension()));
+	SavePackageHelper(Package, LevelFileName, RF_Standalone, GWarn, nullptr, SAVE_KeepGUID);
 }
