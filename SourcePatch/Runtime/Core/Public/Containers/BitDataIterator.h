@@ -12,20 +12,30 @@
 
 /** An iterator which only iterates over set bits from the given memory range.
  * Can be copied & default constructed which just creates an empty instance. */
-class FConstSetBitIterator : public FRelativeBitReference
+template<bool bConst>
+class TSetBitIterator : public FRelativeBitReference
 {
 public:
-	FConstSetBitIterator() : FConstSetBitIterator(nullptr, 0, 0) {}
+	template<typename T>
+	using TQualify = std::conditional_t<bConst, const T, T>;
+	using FDataType = TQualify<uint32>*;
 
-	FConstSetBitIterator(const uint32* InData, int32 StartIndex, int32 Length)
-		: FConstSetBitIterator(FDataSource(InData, StartIndex, StartIndex + Length))
+	TSetBitIterator() : TSetBitIterator(nullptr, 0, 0) {}
+
+	template<typename Allocator = FDefaultBitArrayAllocator>
+	explicit TSetBitIterator(TQualify<TBitArray<Allocator>>& Array, bool bReverseBits = false)
+		: TSetBitIterator(FDataSource(Array.GetData(), 0, Array.Num()), bReverseBits)
+	{}
+
+	TSetBitIterator(FDataType InData, int32 StartIndex, int32 Length, bool bReverseBits = false)
+		: TSetBitIterator(FDataSource(InData, StartIndex, StartIndex + Length), bReverseBits)
 	{}
 
 	/** Forwards iteration operator. */
-	FORCEINLINE FConstSetBitIterator& operator++()
+	FORCEINLINE TSetBitIterator& operator++()
 	{
 		// Mark the current bit as visited.
-		UnvisitedBitMask &= ~this->Mask;
+		UnvisitedBitMask &= ~Mask;
 
 		// Find the first set bit that hasn't been visited yet.
 		FindFirstSetBit();
@@ -47,13 +57,13 @@ public:
 		FindFirstSetBit();
 	}
 
-	FORCEINLINE friend bool operator==(const FConstSetBitIterator& Lhs, const FConstSetBitIterator& Rhs) 
+	FORCEINLINE friend bool operator==(const TSetBitIterator& Lhs, const TSetBitIterator& Rhs) 
 	{
 		// We only need to compare the bit index and the array... all the rest of the state is unobservable.
 		return Lhs.CurrentBitIndex == Rhs.CurrentBitIndex && &Lhs.ArrayData == &Rhs.ArrayData;
 	}
 
-	FORCEINLINE friend bool operator!=(const FConstSetBitIterator& Lhs, const FConstSetBitIterator& Rhs)
+	FORCEINLINE friend bool operator!=(const TSetBitIterator& Lhs, const TSetBitIterator& Rhs)
 	{ 
 		return !(Lhs == Rhs);
 	}
@@ -75,20 +85,25 @@ public:
 		return CurrentBitIndex - StartOffset;
 	}
 
+	FORCEINLINE int32 TotalBits() const
+	{
+		return ArrayNum - StartOffset;
+	}
+
 	FORCEINLINE bool IsValid() const
 	{
 		return ArrayData != nullptr;
 	}
 
-private:
+protected:
 
 	struct FDataSource
 	{
-		const uint32* Data;
+		FDataType Data;
 		int32 StartIndex;
 		int32 DataSize;
 
-		FDataSource(const uint32* InData, int32 InStartIndex, int32 InDataSize)
+		FDataSource(FDataType InData, int32 InStartIndex, int32 InDataSize)
 		{
 			int32 DataOffset = InStartIndex / NumBitsPerDWORD;
 			int32 IndexOffset = DataOffset * NumBitsPerDWORD;
@@ -98,9 +113,10 @@ private:
 		}
 	};
 
-	explicit FConstSetBitIterator(const FDataSource& Source)
+	explicit TSetBitIterator(const FDataSource& Source, bool bInReverseBits)
 		: FRelativeBitReference(Source.StartIndex)
 		, ArrayData            (Source.Data)
+		, bReverseBits         (bInReverseBits)
 		, StartOffset          (Source.StartIndex)
 		, ArrayNum             (Source.DataSize)
 		, UnvisitedBitMask     ((~0U) << (Source.StartIndex & (NumBitsPerDWORD - 1)))
@@ -108,7 +124,7 @@ private:
 		, BaseBitIndex         (Source.StartIndex & ~(NumBitsPerDWORD - 1))
 	{
 		check(CurrentBitIndex < NumBitsPerDWORD);
-		check(ArrayNum < (1 << (NumBitsPerDWORD - NumBitsPerDWORDLogTwo)));
+		check(ArrayNum < (1 << (NumBitsPerDWORD - NumBitsPerDWORDLogTwo - 1)));
 
 		check(CurrentBitIndex <= ArrayNum);
 		if (CurrentBitIndex != ArrayNum)
@@ -117,10 +133,11 @@ private:
 		}
 	}
 
-	const uint32* ArrayData;
+	FDataType ArrayData;
 
+	uint32 bReverseBits : 1;
 	uint32 StartOffset : NumBitsPerDWORDLogTwo;
-	uint32 ArrayNum : NumBitsPerDWORD - NumBitsPerDWORDLogTwo;
+	uint32 ArrayNum : NumBitsPerDWORD - NumBitsPerDWORDLogTwo - 1;
 
 	uint32 UnvisitedBitMask;
 	uint32 CurrentBitIndex;
@@ -132,19 +149,19 @@ private:
 		const int32 LastDWORDIndex = (ArrayNum - 1) / NumBitsPerDWORD;
 
 		// Advance to the next non-zero uint32.
-		uint32 RemainingBitMask = ArrayData[this->WordIndex] & UnvisitedBitMask;
+		uint32 RemainingBitMask = (bReverseBits ? ~ArrayData[WordIndex] : ArrayData[WordIndex]) & UnvisitedBitMask;
 		while (!RemainingBitMask)
 		{
-			++this->WordIndex;
+			++WordIndex;
 			BaseBitIndex += NumBitsPerDWORD;
-			if (this->WordIndex > LastDWORDIndex)
+			if (WordIndex > LastDWORDIndex)
 			{
 				// We've advanced past the end of the array.
 				CurrentBitIndex = ArrayNum;
 				return;
 			}
 
-			RemainingBitMask = ArrayData[this->WordIndex];
+			RemainingBitMask = bReverseBits ? ~ArrayData[WordIndex] : ArrayData[WordIndex];
 			UnvisitedBitMask = ~0;
 		}
 
@@ -153,10 +170,10 @@ private:
 
 		// This operation XORs the above mask with the original mask, which has the effect
 		// of returning only the bits which differ; specifically, the lowest bit
-		this->Mask = NewRemainingBitMask ^ RemainingBitMask;
+		Mask = NewRemainingBitMask ^ RemainingBitMask;
 
 		// If the Nth bit was the lowest set bit of BitMask, then this gives us N
-		CurrentBitIndex = BaseBitIndex + NumBitsPerDWORD - 1 - FMath::CountLeadingZeros(this->Mask);
+		CurrentBitIndex = BaseBitIndex + NumBitsPerDWORD - 1 - FMath::CountLeadingZeros(Mask);
 
 		// If we've accidentally iterated off the end of an array but still within the same DWORD
 		// then set the index to the last index of the array
@@ -164,6 +181,20 @@ private:
 		{
 			CurrentBitIndex = ArrayNum;
 		}
+	}
+};
+
+using FConstSetBitIterator = TSetBitIterator<true>;
+
+class FSetBitIterator : public TSetBitIterator<false>
+{
+public:
+	using TSetBitIterator::TSetBitIterator;
+
+	FORCEINLINE void UnsetCurrentBit() const
+	{
+		if (bReverseBits) ArrayData[WordIndex] |= Mask;
+		else ArrayData[WordIndex] &= ~Mask;
 	}
 };
 

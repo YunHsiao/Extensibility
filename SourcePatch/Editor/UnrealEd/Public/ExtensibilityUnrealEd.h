@@ -26,8 +26,10 @@ public:
 
 class FEditorExtensibilityUtils final
 {
+	// ReSharper disable CppFunctionIsNotImplemented
 	template<typename T> static auto HasLaunchCustomSystemImpl(int) -> std::is_member_function_pointer<decltype(&T::LaunchCustomSystem)>;
 	template<typename T> static auto HasLaunchCustomSystemImpl(long) -> std::false_type;
+	// ReSharper restore CppFunctionIsNotImplemented
 public:
 	template<typename T>
 	static constexpr bool HasLaunchCustomSystem = decltype(HasLaunchCustomSystemImpl<T>(0))::value;
