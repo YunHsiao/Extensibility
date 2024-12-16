@@ -4,7 +4,7 @@
 #pragma once
 
 #include "Containers/BitArray.h"
-#include "Misc/EngineVersionComparison.h"
+#include "ExtensibilityCoreMinimal.h"
 
 #if UE_VERSION_OLDER_THAN(5, 0, 0)
 #define WordIndex DWORDIndex
