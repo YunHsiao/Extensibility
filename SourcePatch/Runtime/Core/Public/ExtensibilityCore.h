@@ -3,8 +3,10 @@
 
 #pragma once
 
-#include "Math/UnrealMath.h"
-#include "Misc/EngineVersionComparison.h"
+#include "ExtensibilityCoreMinimal.h"
+
+// These can lead to name collisions with some legacy plugins
+// Include the above minimal header if that's the case for you
 
 #if UE_VERSION_OLDER_THAN(5, 0, 0)
 

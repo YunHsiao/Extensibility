@@ -76,6 +76,11 @@ namespace Lightmass
 	void FStaticMesh::Import(FLightmassImporter&) { checkNoEntry(); }
 	void FStaticMeshLOD::Import(FLightmassImporter&) { checkNoEntry(); }
 
+	void FStaticLightingMapping::Import(FLightmassImporter&) { checkNoEntry(); }
+	void FStaticLightingTextureMapping::Initialize(FStaticLightingSystem&) { checkNoEntry(); }
+	int32 FStaticLightingTextureMapping::GetSurfaceCacheIndex(const FMinimalStaticLightingVertex&) const { checkNoEntry(); return 0; }
+	FLinearColor FStaticLightingTextureMapping::GetSurfaceCacheLighting(const FMinimalStaticLightingVertex&) const { checkNoEntry(); return {}; }
+
 	template<typename DataType>
 	void TCompleteTaskList<DataType>::ApplyAndClear(FStaticLightingSystem& LightingSystem)
 	{
