@@ -4,9 +4,10 @@
 #include "ExtensibilityUnrealEd.h"
 
 #include "PackageHelperFunctions.h"
+#include "SourceControlHelpers.h"
 #include "Engine/LevelBounds.h"
 
-#if UE_VERSION_NEWER_THAN(5, 1, 0)
+#if !UE_VERSION_OLDER_THAN(5, 1, 0)
 #include "ActorFactories/ActorFactory.h"
 void CreateBrushForVolumeActorHelper(AVolume* NewActor, UBrushBuilder* BrushBuilder)
 {
@@ -19,6 +20,15 @@ void CreateBrushForVolumeActorHelper(AVolume* NewActor, UBrushBuilder* BrushBuil
 	CreateBrushForVolumeActor(NewActor, BrushBuilder);
 }
 #endif
+
+static FWorldTileInfo* GetWorldTileInfo(UPackage* Package)
+{
+#if !UE_VERSION_OLDER_THAN(5, 0, 0)
+	return Package ? Package->GetWorldTileInfo() : nullptr;
+#else
+	return Package ? Package->WorldTileInfo.Get() : nullptr;
+#endif
+}
 
 void UpdateLevelBounds(ULevel* Level)
 {
@@ -41,9 +51,9 @@ void UpdateLevelBounds(ULevel* Level)
 		FVector LocalPosition = WorldPosition - WorldPositionParent;
 		FBox LocalBounds = WorldBounds.ShiftBy(-WorldPosition);
 
-		Package->WorldTileInfo->Bounds = LocalBounds;
-		Package->WorldTileInfo->AbsolutePosition = FIntVector(WorldPosition.X, WorldPosition.Y, WorldPosition.Z);
-		Package->WorldTileInfo->Position = FIntVector(LocalPosition.X, LocalPosition.Y, LocalPosition.Z);
+		GetWorldTileInfo(Package)->Bounds = LocalBounds;
+		GetWorldTileInfo(Package)->AbsolutePosition = FIntVector(WorldPosition.X, WorldPosition.Y, WorldPosition.Z);
+		GetWorldTileInfo(Package)->Position = FIntVector(LocalPosition.X, LocalPosition.Y, LocalPosition.Z);
 
 		(void)Level->MarkPackageDirty();
 	}
@@ -53,5 +63,16 @@ void SavePackageWithConsistentGuid(UPackage* Package)
 {
 	FString LevelFileName;
 	ensure(FPackageName::TryConvertLongPackageNameToFilename(Package->GetPathName(), LevelFileName, FPackageName::GetMapPackageExtension()));
+	const FSourceControlState State = USourceControlHelpers::QueryFileState(LevelFileName);
+
+	if (State.bIsSourceControlled && !State.bIsCheckedOut && !State.bIsAdded && State.bCanCheckOut)
+	{
+		USourceControlHelpers::CheckOutFile(LevelFileName);
+	}
+
+#if UE_VERSION_OLDER_THAN(5, 0, 0)
 	SavePackageHelper(Package, LevelFileName, RF_Standalone, GWarn, nullptr, SAVE_KeepGUID);
+#else
+	SavePackageHelper(Package, LevelFileName, RF_Standalone, GWarn, SAVE_KeepGUID);
+#endif
 }
