@@ -4,6 +4,7 @@
 #include "ExtensibilityUnrealEd.h"
 
 #include "Misc/EngineBuildSettings.h"
+#include "Misc/PrivateAccessor.h"
 #include "StaticLightingSystem/StaticLightingPrivate.h"
 
 #define LOCTEXT_NAMESPACE "Lightmass"
@@ -123,5 +124,33 @@ TSet<FString> FLightmassExporter::GetPluginBinaryDependencies(bool bIs64Bit, boo
 	}
 	return Paths;
 }
+
+FCustomStaticLightingSystem::FCustomStaticLightingSystem(const FLightingBuildOptions& InOptions, UWorld* InWorld, ULevel* InLightingScenario)
+#if UE_VERSION_OLDER_THAN(5, 5, 0)
+	: FStaticLightingSystem(InOptions, InWorld, InLightingScenario)
+#else
+	: FStaticLightingSystem(InOptions, {InWorld, InLightingScenario})
+#endif
+{}
+
+FCustomLightmassProcessor::FCustomLightmassProcessor(const FStaticLightingSystem& InSystem, bool bInDumpBinaryResults, bool bInOnlyBuildVisibility)
+	: FLightmassProcessor(InSystem, bInDumpBinaryResults, bInOnlyBuildVisibility)
+{}
+
+#if UE_VERSION_NEWER_THAN(5, 5, 0)
+DEFINE_PRIVATE_ACCESSOR_VARIABLE(GetLightingContext, FStaticLightingSystem, FStaticLightingBuildContext, LightingContext);
+#endif
+
+FCustomLightmassExporter::FCustomLightmassExporter(const FStaticLightingSystem& InSystem)
+#if UE_VERSION_OLDER_THAN(5, 5, 0)
+	: FLightmassExporter(InSystem.GetWorld())
+#else
+	: FLightmassExporter(PrivateAccess(InSystem, GetLightingContext))
+#endif
+{}
+
+FCustomLightmassExporter::~FCustomLightmassExporter() {}
+FCustomLightmassProcessor::~FCustomLightmassProcessor() {}
+FCustomStaticLightingSystem::~FCustomStaticLightingSystem() {}
 
 #undef LOCTEXT_NAMESPACE

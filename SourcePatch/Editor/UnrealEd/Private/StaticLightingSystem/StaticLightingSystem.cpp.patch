@@ -4,32 +4,32 @@
 +%09%09%09// if (bForceNoPrecomputedLighting) // @ExtensibilityTag(-: @Crysknife(OlderThan = 5.1))%0a%0a
 +%09%09%09if (bForceNoPrecomputedLighting && !ActiveStaticLightingSystem-%3ebForceAllowStaticLighting) // @ExtensibilityTag()%0a%0a
  %09%09%09%7b%0a%09%09%09%09DestroyStaticLightingSystems();%0a%09%09%09%7d%0a%09%09%09else%0a%09%09%09%7b%0a%09%09%09%09FStaticLightingManager::Get()-%3eFailLightingBuild();%0a%09%09%09%7d%0a%09%09%7d%0a%09%7d%0a%09else%0a%09%7b%0a%09%09// Tell the user that they must close their current build first.%0a%09%09FStaticLightingManager::Get()-%3eFailLightingBu
-@@ -13743,537 +13755,686 @@
- %09%09%09%09%09const bool bAllowStaticLighting = (!AllowStaticLightingVar %7c%7c AllowStaticLightingVar-%3eGetValueOnGameThread() != 0);%0a%09%09%09%09%09const bool bForceNoPrecomputedLighting = GWorld-%3eGetWorldSettings()-%3ebForceNoPrecomputedLighting %7c%7c !bAllowStaticLighting;%0a%0a
+@@ -14325,537 +14337,686 @@
+ no precomputed lighting is allowed. Handle both cases.%0a%09%09%09%09%09const bool bAllowStaticLighting = IsStaticLightingAllowed();%0a%09%09%09%09%09const bool bForceNoPrecomputedLighting = GWorld-%3eGetWorldSettings()-%3ebForceNoPrecomputedLighting %7c%7c !bAllowStaticLighting;%0a%0a
 -%09%09%09%09%09if (bForceNoPrecomputedLighting)
 +%09%09%09%09%09// if (bForceNoPrecomputedLighting) // @ExtensibilityTag(-)%0a%0a
 +%09%09%09%09%09if (bForceNoPrecomputedLighting && !ActiveStaticLightingSystem-%3ebForceAllowStaticLighting) // @ExtensibilityTag()%0a%0a
  %09%09%09%09%09%7b%0a%09%09%09%09%09%09DestroyStaticLightingSystems();%0a%09%09%09%09%09%7d%0a%09%09%09%09%09else%0a%09%09%09%09%09%7b%0a%09%09%09%09%09%09FStaticLightingManager::Get()-%3eFailLightingBuild();%0a%09%09%09%09%09%7d%0a%09%09%09%09%7d%0a%09%09%09%7d%0a%09%09%7d%0a%0a%09%09if (!ActiveStaticLightingSystem)%0a%09%09%7b%0a%09%09%09FinishLightingBuild();%0a%09%09%7d%0a%09%7d%0a%7d%0a%0avoid FStaticLightingManag
-@@ -14642,534 +14666,708 @@
- Var %7c%7c AllowStaticLightingVar-%3eGetValueOnGameThread() != 0);%0a%09const bool bForceNoPrecomputedLighting = GWorld-%3eGetWorldSettings()-%3ebForceNoPrecomputedLighting %7c%7c !bAllowStaticLighting;%0a%0a%09FStaticLightingManager::Get()-%3eClearCurrentNotification();%0a%0a%09%0a%0a
+@@ -15040,534 +15064,708 @@
+ %0a%09const bool bAllowStaticLighting = IsStaticLightingAllowed();%0a%09const bool bForceNoPrecomputedLighting = GWorld-%3eGetWorldSettings()-%3ebForceNoPrecomputedLighting %7c%7c !bAllowStaticLighting;%0a%0a%09FStaticLightingManager::Get()-%3eClearCurrentNotification();%0a%09%0a
 -%09if (!bForceNoPrecomputedLighting)
 +%09// if (!bForceNoPrecomputedLighting) // @ExtensibilityTag(-: @Crysknife(NewerThan = 5.1))%0a%0a
 +%09if (!bForceNoPrecomputedLighting %7c%7c ActiveStaticLightingSystem-%3ebForceAllowStaticLighting) // @ExtensibilityTag()%0a%0a
  %09%7b%0a%09%09if (GEditor-%3eGetMapBuildCancelled())%0a%09%09%7b%0a%09%09%09ErrorText = LOCTEXT(%22LightBuildCanceledMessage%22, %22Lighting build canceled.%22);%0a%09%09%7d%0a%09%09else%0a%09%09%7b%0a%09%09%09// Override failure message if one provided%0a%09%09%09if (ErrorText.IsEmpty())%0a%09%09%09%7b%0a%09%09%09%09ErrorText = LOCTEXT(%22Lig
-@@ -15754,568 +15790,597 @@
+@@ -16152,568 +16188,597 @@
  cLightingSystem, Warning, TEXT(%22Failed to build lighting!!! %25s%22),*ErrorText.ToString());%0a%0a%09%09FMessageLog(%22LightingResults%22).Open();%0a%09%7d%0a%0a%09DestroyStaticLightingSystems();%0a%7d%0a%0avoid FStaticLightingManager::FinishLightingBuild()%0a%7b%0a%09UWorld* World = GWorld;%0a%0a
 -%09GetRendererModule().UpdateMapNeedsLightingFullyRebuiltState(World);
 +%09// GetRendererModule().UpdateMapNeedsLightingFullyRebuiltState(World); // @ExtensibilityTag(-)%0a%0a
- %0a%0a%09GEngine-%3eDeferredCommands.AddUnique(TEXT(%22MAP CHECK NOTIFYRESULTS%22));%0a%0a%09if (World-%3eScene)%0a%09%7b%0a%09%09// Everything should be built at this point, dump unbuilt interactions for debugging%0a%09%09World-%3eScene-%3eDumpUnbuiltLightInteractions(*GLog);%0a%09%7d%0a%0a%09if (bBuil
-@@ -15847,506 +15889,695 @@
- MessageLog(%22LightingResults%22).Open();%0a%09%7d%0a%0a%09DestroyStaticLightingSystems();%0a%7d%0a%0avoid FStaticLightingManager::FinishLightingBuild()%0a%7b%0a%09UWorld* World = GWorld;%0a%0a%09// GetRendererModule().UpdateMapNeedsLightingFullyRebuiltState(World); // @ExtensibilityTag(-)%0a%0a%0a%0a
+ %0a%09GEngine-%3eDeferredCommands.AddUnique(TEXT(%22MAP CHECK NOTIFYRESULTS%22));%0a%0a%09if (World-%3eScene)%0a%09%7b%0a%09%09// Everything should be built at this point, dump unbuilt interactions for debugging%0a%09%09World-%3eScene-%3eDumpUnbuiltLightInteractions(*GLog);%0a%09%7d%0a%0a%09// Verify 
+@@ -16244,506 +16286,695 @@
+ FMessageLog(%22LightingResults%22).Open();%0a%09%7d%0a%0a%09DestroyStaticLightingSystems();%0a%7d%0a%0avoid FStaticLightingManager::FinishLightingBuild()%0a%7b%0a%09UWorld* World = GWorld;%0a%0a%09// GetRendererModule().UpdateMapNeedsLightingFullyRebuiltState(World); // @ExtensibilityTag(-)%0a%0a%0a
 +%09// @ExtensibilityTagBegin()%0a%0a%09if (!IsRunningCommandlet() %7c%7c IsAllowCommandletRendering())%0a%09%7b%0a%09%09GetRendererModule().UpdateMapNeedsLightingFullyRebuiltState(World);%0a%09%7d%0a%09// @ExtensibilityTagEnd()%0a%0a
- %09GEngine-%3eDeferredCommands.AddUnique(TEXT(%22MAP CHECK NOTIFYRESULTS%22));%0a%0a%09if (World-%3eScene)%0a%09%7b%0a%09%09// Everything should be built at this point, dump unbuilt interactions for debugging%0a%09%09World-%3eScene-%3eDumpUnbuiltLightInteractions(*GLog);%0a%09%7d%0a%0a%09if (bBuildR
-@@ -22960,500 +23004,585 @@
- StaticLighting%22));%0a%09%09const bool bAllowStaticLighting = (!AllowStaticLightingVar %7c%7c AllowStaticLightingVar-%3eGetValueOnGameThread() != 0);%0a%09%09bForceNoPrecomputedLighting = World-%3eGetWorldSettings()-%3ebForceNoPrecomputedLighting %7c%7c !bAllowStaticLighting;%0a
+ %09GEngine-%3eDeferredCommands.AddUnique(TEXT(%22MAP CHECK NOTIFYRESULTS%22));%0a%0a%09if (World-%3eScene)%0a%09%7b%0a%09%09// Everything should be built at this point, dump unbuilt interactions for debugging%0a%09%09World-%3eScene-%3eDumpUnbuiltLightInteractions(*GLog);%0a%09%7d%0a%0a%09// Verify i
+@@ -24237,500 +24281,585 @@
+ vels( Info );%0a%09%09%09WarnAboutSkippedLevels.ShowModal();%0a%09%09%7d%0a%0a%09%09const bool bAllowStaticLighting = IsStaticLightingAllowed();%0a%09%09bForceNoPrecomputedLighting = LightingContext.World-%3eGetWorldSettings()-%3ebForceNoPrecomputedLighting %7c%7c !bAllowStaticLighting;%0a
 +%09%09bForceNoPrecomputedLighting &= !bForceAllowStaticLighting; // @ExtensibilityTag()%0a%0a
  %09%09GConfig-%3eGetFloat( TEXT(%22TextureStreaming%22), TEXT(%22MaxLightmapRadius%22), GMaxLightmapRadius, GEngineIni );%0a%09%09GConfig-%3eGetBool( TEXT(%22TextureStreaming%22), TEXT(%22AllowStreamingLightmaps%22), GAllowStreamingLightmaps, GEngineIni );%0a%09%09%0a%09%09if (!bForceNoPreco
-@@ -41799,500 +41849,629 @@
+@@ -47312,500 +47362,629 @@
  nent*%3e LODSubActorSMComponents;%0a%0a%09%09%09%09%09%09if (LODActor)%0a%09%09%09%09%09%09%7b%0a%09%09%09%09%09%09%09PrimitiveSubStaticMeshMap.MultiFind(Primitive, LODSubActorSMComponents);%0a%09%09%09%09%09%09%7d%0a%0a%09%09%09%09%09%09for (auto Mesh : PrimitiveInfo.Meshes)%0a%09%09%09%09%09%09%7b%0a%09%09%09%09%09%09%09ActorMeshMap.Add(Actor, Mesh);%0a%09%09%09%09%09%09%7d%0a%0a
 +%09%09%09%09%09%09if (!CustomizePrimitiveInfo(Primitive, PrimitiveInfo)) continue; // @ExtensibilityTag(: @Crysknife(MatchContext = Lower))%0a%0a
- %09%09%09%09%09%09AddPrimitiveStaticLightingInfo(PrimitiveInfo, bBuildActorLighting);%0a%09%09%09%09%09%7d%0a%09%09%09%09%7d%0a%09%09%09%7d%0a%0a%09%09%09ActorsInvalidated++;%0a%0a%09%09%09if (ActorsInvalidated %25 ProgressUpdateFrequency == 0)%0a%09%09%09%7b%0a%09%09%09%09GWarn-%3eUpdateProgress(ActorsInvalidated, ActorsToInvalidate);%0a%09%09%09%7d
+ %09%09%09%09%09%09AddPrimitiveStaticLightingInfo(PrimitiveInfo, bBuildActorLighting, bDeferActorMappping);%0a%09%09%09%09%09%7d%0a%09%09%09%09%7d%0a%09%09%09%7d%0a%0a%09%09%09ActorsInvalidated++;%0a%0a%09%09%09if (ActorsInvalidated %25 ProgressUpdateFrequency == 0)%0a%09%09%09%7b%0a%09%09%09%09GWarn-%3eUpdateProgress(ActorsInvalidated, Acto

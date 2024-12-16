@@ -9,19 +9,22 @@
 class UNREALED_API FCustomStaticLightingSystem : public FStaticLightingSystem
 {
 public:
-	using FStaticLightingSystem::FStaticLightingSystem;
+	FCustomStaticLightingSystem(const FLightingBuildOptions& InOptions, UWorld* InWorld, ULevel* InLightingScenario);
+	~FCustomStaticLightingSystem() override;
 };
 
 class UNREALED_API FCustomLightmassProcessor : public FLightmassProcessor
 {
 public:
-	using FLightmassProcessor::FLightmassProcessor;
+	FCustomLightmassProcessor(const FStaticLightingSystem& InSystem, bool bInDumpBinaryResults, bool bInOnlyBuildVisibility);
+	~FCustomLightmassProcessor() override;
 };
 
 class UNREALED_API FCustomLightmassExporter : public FLightmassExporter
 {
 public:
-	using FLightmassExporter::FLightmassExporter;
+	explicit FCustomLightmassExporter(const FStaticLightingSystem& InSystem);
+	~FCustomLightmassExporter() override;
 };
 
 class FEditorExtensibilityUtils final

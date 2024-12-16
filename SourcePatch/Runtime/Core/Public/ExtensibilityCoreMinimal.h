@@ -1,0 +1,108 @@
+// SPDX-FileCopyrightText: 2024 Yun Hsiao Wu <yunhsiaow@gmail.com>
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include "Math/UnrealMath.h"
+#include "Misc/EngineVersionComparison.h"
+
+// The default behavior of the newer-than macro is bogus: Newer than 5.0 should include 5.0 itself
+#undef UE_VERSION_NEWER_THAN
+#define UE_VERSION_NEWER_THAN(MajorVersion, MinorVersion, PatchVersion) \
+	UE_GREATER_SORT(ENGINE_MAJOR_VERSION, MajorVersion, UE_GREATER_SORT(ENGINE_MINOR_VERSION, MinorVersion, UE_GREATER_SORT(ENGINE_PATCH_VERSION, PatchVersion, true)))
+
+#if UE_VERSION_OLDER_THAN(5, 0, 0)
+	#define UE_ENABLE_IF_BEFORE_5_0(...) __VA_ARGS__
+	#define UE_ENABLE_IF_AFTER_5_0(...)
+	#define UE_CONDITIONAL_ON_5_0(A, B) A
+#else
+	#define UE_ENABLE_IF_BEFORE_5_0(...)
+	#define UE_ENABLE_IF_AFTER_5_0(...) __VA_ARGS__
+	#define UE_CONDITIONAL_ON_5_0(A, B) B
+#endif
+
+#if UE_VERSION_OLDER_THAN(5, 1, 0)
+	#define UE_ENABLE_IF_BEFORE_5_1(...) __VA_ARGS__
+	#define UE_ENABLE_IF_AFTER_5_1(...)
+	#define UE_CONDITIONAL_ON_5_1(A, B) A
+#else
+	#define UE_ENABLE_IF_BEFORE_5_1(...)
+	#define UE_ENABLE_IF_AFTER_5_1(...) __VA_ARGS__
+	#define UE_CONDITIONAL_ON_5_1(A, B) B
+#endif
+
+#if UE_VERSION_OLDER_THAN(5, 2, 0)
+	#define UE_ENABLE_IF_BEFORE_5_2(...) __VA_ARGS__
+	#define UE_ENABLE_IF_AFTER_5_2(...)
+	#define UE_CONDITIONAL_ON_5_2(A, B) A
+#else
+	#define UE_ENABLE_IF_BEFORE_5_2(...)
+	#define UE_ENABLE_IF_AFTER_5_2(...) __VA_ARGS__
+	#define UE_CONDITIONAL_ON_5_2(A, B) B
+#endif
+
+#if UE_VERSION_OLDER_THAN(5, 3, 0)
+	#define UE_ENABLE_IF_BEFORE_5_3(...) __VA_ARGS__
+	#define UE_ENABLE_IF_AFTER_5_3(...)
+	#define UE_CONDITIONAL_ON_5_3(A, B) A
+#else
+	#define UE_ENABLE_IF_BEFORE_5_3(...)
+	#define UE_ENABLE_IF_AFTER_5_3(...) __VA_ARGS__
+	#define UE_CONDITIONAL_ON_5_3(A, B) B
+#endif
+
+#if UE_VERSION_OLDER_THAN(5, 4, 0)
+	#define UE_ENABLE_IF_BEFORE_5_4(...) __VA_ARGS__
+	#define UE_ENABLE_IF_AFTER_5_4(...)
+	#define UE_CONDITIONAL_ON_5_4(A, B) A
+#else
+	#define UE_ENABLE_IF_BEFORE_5_4(...)
+	#define UE_ENABLE_IF_AFTER_5_4(...) __VA_ARGS__
+	#define UE_CONDITIONAL_ON_5_4(A, B) B
+#endif
+
+#if UE_VERSION_OLDER_THAN(5, 5, 0)
+	#define UE_ENABLE_IF_BEFORE_5_5(...) __VA_ARGS__
+	#define UE_ENABLE_IF_AFTER_5_5(...)
+	#define UE_CONDITIONAL_ON_5_5(A, B) A
+#else
+	#define UE_ENABLE_IF_BEFORE_5_5(...)
+	#define UE_ENABLE_IF_AFTER_5_5(...) __VA_ARGS__
+	#define UE_CONDITIONAL_ON_5_5(A, B) B
+#endif
+
+#if UE_VERSION_OLDER_THAN(5, 4, 0)
+enum EAllowShrinking
+{
+	No,
+	Yes
+};
+#endif
+
+#if UE_VERSION_OLDER_THAN(5, 1, 0)
+#define UE_PI								PI
+#define UE_SMALL_NUMBER 					SMALL_NUMBER
+#define UE_KINDA_SMALL_NUMBER 				KINDA_SMALL_NUMBER
+#define UE_BIG_NUMBER 						BIG_NUMBER
+#define UE_EULERS_NUMBER 					EULERS_NUMBER
+#define UE_FLOAT_NON_FRACTIONAL 			FLOAT_NON_FRACTIONAL
+#define UE_MAX_FLT 							MAX_FLT
+#define UE_INV_PI 							INV_PI
+#define UE_HALF_PI 							HALF_PI
+#define UE_DELTA 							DELTA
+#define UE_FLOAT_NORMAL_THRESH 				FLOAT_NORMAL_THRESH
+#define UE_THRESH_POINT_ON_PLANE 			THRESH_POINT_ON_PLANE
+#define UE_THRESH_POINT_ON_SIDE 			THRESH_POINT_ON_SIDE
+#define UE_THRESH_POINTS_ARE_SAME 			THRESH_POINTS_ARE_SAME
+#define UE_THRESH_POINTS_ARE_NEAR 			THRESH_POINTS_ARE_NEAR
+#define UE_THRESH_NORMALS_ARE_SAME 			THRESH_NORMALS_ARE_SAME
+#define UE_THRESH_UVS_ARE_SAME 				THRESH_UVS_ARE_SAME
+#define UE_THRESH_VECTORS_ARE_NEAR 			THRESH_VECTORS_ARE_NEAR
+#define UE_THRESH_SPLIT_POLY_WITH_PLANE 	THRESH_SPLIT_POLY_WITH_PLANE
+#define UE_THRESH_SPLIT_POLY_PRECISELY 		THRESH_SPLIT_POLY_PRECISELY
+#define UE_THRESH_ZERO_NORM_SQUARED 		THRESH_ZERO_NORM_SQUARED
+#define UE_THRESH_NORMALS_ARE_PARALLEL 		THRESH_NORMALS_ARE_PARALLEL
+#define UE_THRESH_NORMALS_ARE_ORTHOGONAL	THRESH_NORMALS_ARE_ORTHOGONAL
+#define UE_THRESH_VECTOR_NORMALIZED 		THRESH_VECTOR_NORMALIZED
+#define UE_THRESH_QUAT_NORMALIZED 			THRESH_QUAT_NORMALIZED
+#endif
