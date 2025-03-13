@@ -3,8 +3,12 @@
 
 #include "ExtensibilityUnrealEd.h"
 
+#include "Dom/JsonObject.h"
+#include "HAL/FileManager.h"
 #include "Misc/EngineBuildSettings.h"
 #include "Misc/PrivateAccessor.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
 #include "StaticLightingSystem/StaticLightingPrivate.h"
 
 #define LOCTEXT_NAMESPACE "Lightmass"
@@ -79,49 +83,81 @@ void FLightmassExporter::WriteCustomData(int32 Channel, bool bForceContentExport
 TSet<FString> FLightmassExporter::GetPluginBinaryDependencies(bool bIs64Bit, bool bIsOptional) const
 {
 #if PLATFORM_WINDOWS
-	static const FString BinaryPlatform32 = TEXT("Win32/");
-	static const FString BinaryPlatform64 = TEXT("Win64/");
+	static const FString BinaryPlatform32 = TEXT("Win32");
+	static const FString BinaryPlatform64 = TEXT("Win64");
+	const FString& Platform = bIs64Bit ? BinaryPlatform64 : BinaryPlatform32;
 	static const FString BinaryExtension = TEXT("dll");
-	const FString& BinaryPlatform = bIs64Bit ? BinaryPlatform64 : BinaryPlatform32;
-	const FString& GeneralPlatform = BinaryPlatform;
+	const FString BinaryPrefix;
 #elif PLATFORM_MAC 
-	static const FString BinaryPlatform = TEXT("Mac/");
+	static const FString Platform = TEXT("Mac");
 	static const FString BinaryExtension = TEXT("dylib");
-	const FString& GeneralPlatform = BinaryPlatform;
+	const FString BinaryPrefix;
 #elif PLATFORM_LINUX 
-	static const FString BinaryPlatform = TEXT("Linux/lib");
-	static const FString GeneralPlatform = TEXT("Linux/");
+	static const FString Platform = TEXT("Linux");
 	static const FString BinaryExtension = TEXT("so");
+	const FString BinaryPrefix = TEXT("lib");
 #else
 #error "Unknown Lightmass platform"
 #endif
+
 	TSet<FString> Paths;
+	TSharedPtr<FJsonObject> JsonParsed;
+	FString ManifestPath = FString::Printf(TEXT("Binaries/%s/UnrealLightmass.modules"), *Platform);
+
 	if (bIsOptional)
 	{
-		Paths.Emplace(FString::Printf(TEXT("Binaries/%sUnrealLightmass-Core.pdb"), *BinaryPlatform));
+		Paths.Emplace(FString::Printf(TEXT("Binaries/%s/%sUnrealLightmass-Core.pdb"), *Platform, *BinaryPrefix));
 	}
 	else
 	{
-		Paths.Emplace(FString::Printf(TEXT("Binaries/%sUnrealLightmass.modules"), *GeneralPlatform));
+		Paths.Emplace(ManifestPath);
+		TUniquePtr<FArchive> Ar(IFileManager::Get().CreateFileReader(*(FPaths::EngineDir() / ManifestPath)));
+
+		if (Ar)
+		{
+			auto Reader = TJsonReaderFactory<ANSICHAR>::Create(Ar.Get());
+			FJsonSerializer::Deserialize(Reader, JsonParsed);
+		}
 	}
 
 	TArray<FString> Modules;
 	DependentPluginModules.ParseIntoArray(Modules, TEXT(" "));
+	bool bManifestNeedsUpdate = false;
+
 	for (FString& Pair : Modules)
 	{
 		FString Plugin, Module;
 		check(Pair.Split(TEXT(":"), &Plugin, &Module));
 		if (bIsOptional)
 		{
-			Paths.Emplace(FString::Printf(TEXT("Plugins/%s/Binaries/%sUnrealLightmass-%s.pdb"), *Plugin, *BinaryPlatform, *Module));
+			Paths.Emplace(FString::Printf(TEXT("Plugins/%s/Binaries/%s/%sUnrealLightmass-%s.pdb"), *Plugin, *Platform, *BinaryPrefix, *Module));
 		}
 		else
 		{
-			Paths.Emplace(FString::Printf(TEXT("Plugins/%s/Binaries/%sUnrealLightmass-%s.%s"), *Plugin, *BinaryPlatform, *Module, *BinaryExtension));
-			// Do we need to manually merge this?
-			Paths.Emplace(Pair = FString::Printf(TEXT("Plugins/%s/Binaries/%sUnrealLightmass.modules"), *Plugin, *GeneralPlatform));
+			FString BinaryName = FString::Printf(TEXT("%sUnrealLightmass-%s.%s"), *BinaryPrefix, *Module, *BinaryExtension);
+			Paths.Emplace(FString::Printf(TEXT("Plugins/%s/Binaries/%s/%s"), *Plugin, *Platform, *BinaryName));
+
+			if (const auto& ModuleList = JsonParsed->GetObjectField(TEXT("Modules")))
+			{
+				if (!ModuleList->HasField(Module))
+				{
+					ModuleList->SetStringField(Module, BinaryName);
+					bManifestNeedsUpdate = true;
+				}
+			}
 		}
 	}
+
+	if (bManifestNeedsUpdate)
+	{
+		TUniquePtr<FArchive> Ar(IFileManager::Get().CreateFileWriter(*(FPaths::EngineDir() / ManifestPath)));
+		if (Ar)
+		{
+			auto Writer = TJsonWriterFactory<ANSICHAR>::Create(Ar.Get());
+			FJsonSerializer::Serialize(JsonParsed.ToSharedRef(), *Writer);
+		}
+	}
+
 	return Paths;
 }
 

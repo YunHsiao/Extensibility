@@ -74,3 +74,6 @@ using FCompactBoxSphereBounds3d = FBoxSphereBounds;
 using FCompactBoxSphereBounds = FBoxSphereBounds;
 
 #endif
+
+template<typename T> T* GetPtrOrNull(TOptional<T>& Ptr) { return Ptr.IsSet() ? &Ptr.GetValue() : nullptr; }
+template<typename T> const T* GetPtrOrNull(const TOptional<T>& Ptr) { return GetPtrOrNull(const_cast<TOptional<T>&>(Ptr)); }
